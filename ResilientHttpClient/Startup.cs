@@ -31,6 +31,7 @@ namespace ResilientHttpClient
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
+            services.AddHttpClient<UsersClient>(client => client.BaseAddress = new Uri("https://jsonplaceholder.typicode.com"));
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }

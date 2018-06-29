@@ -12,14 +12,9 @@ namespace ResilientHttpClient.Pages
     {
         public IEnumerable<User> Users { get; set; }
 
-        public async Task OnGetAsync()
+        public async Task OnGetAsync([FromServices]UsersClient client)
         {
-            var apiUrl = "https://jsonplaceholder.typicode.com/users";
-            var client = new HttpClient();
-            var response = await client.GetAsync(apiUrl);
-            response.EnsureSuccessStatusCode();
-            
-            Users = await response.Content.ReadAsAsync<IEnumerable<User>>();
+            Users = await client.GetUsers();
         }
     }
 }
