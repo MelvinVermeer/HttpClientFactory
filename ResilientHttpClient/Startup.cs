@@ -1,14 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Hosting;
+using Polly;
+using System;
+using System.Net.Http;
 
 namespace ResilientHttpClient
 {
@@ -31,7 +29,11 @@ namespace ResilientHttpClient
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.AddHttpClient<UsersClient>(client => client.BaseAddress = new Uri("https://jsonplaceholder.typicode.com"));
+            services.AddHttpClient<UsersClient>(client => client.BaseAddress = new System.Uri("https://jsonplaceholder.typicode.com"))
+                .AddTransientHttpErrorPolicy(policyBuilder => policyBuilder.CircuitBreakerAsync(2, durationOfBreak: TimeSpan.FromMinutes(1)))
+                ;
+
+            ;
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
