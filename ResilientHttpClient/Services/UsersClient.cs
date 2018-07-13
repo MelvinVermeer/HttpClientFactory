@@ -1,9 +1,9 @@
-using System;
+using Microsoft.Extensions.Logging;
+using Polly.CircuitBreaker;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 
 namespace ResilientHttpClient
 {
@@ -30,6 +30,11 @@ namespace ResilientHttpClient
             catch (HttpRequestException ex)
             {
                 _logger.LogError($"An error occured connecting to Users API {ex.ToString()}");
+                return Enumerable.Empty<User>();
+            }
+            catch (BrokenCircuitException ex)
+            {
+                _logger.LogError($"CircuitBreaker is open Users API {ex.ToString()}");
                 return Enumerable.Empty<User>();
             }
         }
